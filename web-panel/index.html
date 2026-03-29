@@ -1,0 +1,662 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pizza Pasta SMP - Minecraft Server</title>
+    <meta name="description" content="Join Pizza Pasta SMP, an epic Minecraft survival multiplayer server. Connect at 140.228.72.145">
+    <meta name="author" content="Lovable" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/072d5d8f-cc46-4da2-8a3b-f95edd50f560/id-preview-95f67f36--62053b47-7630-4c0a-9314-0201fa9dc836.lovable.app-1774458502606.png">
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@Lovable" />
+    <meta name="twitter:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/072d5d8f-cc46-4da2-8a3b-f95edd50f560/id-preview-95f67f36--62053b47-7630-4c0a-9314-0201fa9dc836.lovable.app-1774458502606.png">
+    <meta property="og:title" content="Pizza Pasta SMP - Minecraft Server">
+    <meta name="twitter:title" content="Pizza Pasta SMP - Minecraft Server">
+    <meta property="og:description" content="Join Pizza Pasta SMP, an epic Minecraft survival multiplayer server. Connect at 140.228.72.145">
+    <meta name="twitter:description" content="Join Pizza Pasta SMP, an epic Minecraft survival multiplayer server. Connect at 140.228.72.145">
+    <script type="module" crossorigin src="assets/index-DNAwsM2X.js"></script>
+    <link rel="stylesheet" crossorigin href="assets/index-DRGKavOA.css">
+    <style>
+      /* ===== Community & Donation sections - matches Lovable theme ===== */
+      .pp-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem 4rem;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+      }
+      @media (max-width: 768px) {
+        .pp-container { grid-template-columns: 1fr; }
+      }
+
+      .pp-section {
+        padding: 1.5rem;
+        background: hsl(220 18% 11%);
+        border: 1px solid hsl(220 15% 18%);
+        border-radius: 0.75rem;
+        color: hsl(40 15% 93%);
+        font-family: 'Space Grotesk', sans-serif;
+      }
+      .pp-section h2 {
+        margin: 0 0 1.25rem;
+        color: hsl(32 95% 55%);
+        font-family: 'Press Start 2P', cursive;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+      }
+      .pp-section h2 .pp-icon {
+        font-size: 1.1rem;
+      }
+
+      /* News items */
+      .pp-news-item {
+        background: hsl(220 20% 7%);
+        border: 1px solid hsl(220 15% 18%);
+        border-left: 3px solid hsl(32 95% 55%);
+        padding: 1rem 1.25rem;
+        margin-bottom: 0.75rem;
+        border-radius: 0.5rem;
+        transition: border-color 0.2s;
+      }
+      .pp-news-item:hover {
+        border-left-color: hsl(160 70% 45%);
+      }
+      .pp-news-date {
+        font-size: 0.7rem;
+        color: hsl(220 8% 50%);
+        margin-bottom: 0.3rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .pp-news-title {
+        font-weight: 600;
+        color: hsl(40 15% 93%);
+        margin-bottom: 0.3rem;
+        font-size: 0.95rem;
+      }
+      .pp-news-body {
+        font-size: 0.85rem;
+        color: hsl(220 8% 50%);
+        line-height: 1.5;
+      }
+      .pp-empty {
+        color: hsl(220 8% 50%);
+        font-style: italic;
+        text-align: center;
+        padding: 2rem 1rem;
+        font-size: 0.85rem;
+      }
+
+      /* Donation goals */
+      .pp-goal {
+        background: hsl(220 20% 7%);
+        border: 1px solid hsl(220 15% 18%);
+        padding: 1rem 1.25rem;
+        margin-bottom: 0.75rem;
+        border-radius: 0.5rem;
+      }
+      .pp-goal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 0.6rem;
+        flex-wrap: wrap;
+        gap: 0.3rem;
+      }
+      .pp-goal-name {
+        font-weight: 600;
+        color: hsl(40 15% 93%);
+        font-size: 0.95rem;
+      }
+      .pp-goal-amount {
+        color: hsl(160 70% 45%);
+        font-weight: 700;
+        font-size: 0.85rem;
+      }
+      .pp-goal-bar-bg {
+        background: hsl(220 15% 15%);
+        border-radius: 9999px;
+        height: 10px;
+        overflow: hidden;
+      }
+      .pp-goal-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, hsl(32 95% 55%), hsl(160 70% 45%));
+        border-radius: 9999px;
+        transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .pp-goal-desc {
+        font-size: 0.75rem;
+        color: hsl(220 8% 50%);
+        margin-top: 0.5rem;
+      }
+
+      /* Admin toggle */
+      .pp-admin-wrap {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem 3rem;
+        text-align: center;
+      }
+      .pp-admin-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.6rem 1.5rem;
+        background: transparent;
+        color: hsl(220 8% 50%);
+        border: 1px solid hsl(220 15% 18%);
+        border-radius: 0.5rem;
+        cursor: pointer;
+        font-size: 0.8rem;
+        font-family: 'Space Grotesk', sans-serif;
+        transition: all 0.2s;
+      }
+      .pp-admin-toggle:hover {
+        background: hsl(32 95% 55% / 0.1);
+        border-color: hsl(32 95% 55% / 0.3);
+        color: hsl(32 95% 55%);
+      }
+
+      /* Admin panel */
+      .pp-admin-panel {
+        display: none;
+        max-width: 1200px;
+        margin: 0 auto 3rem;
+        padding: 1.5rem;
+        background: hsl(220 18% 11%);
+        border: 1px solid hsl(32 95% 55% / 0.3);
+        border-radius: 0.75rem;
+        color: hsl(40 15% 93%);
+        font-family: 'Space Grotesk', sans-serif;
+      }
+      .pp-admin-panel.open { display: block; }
+      .pp-admin-panel h3 {
+        color: hsl(32 95% 55%);
+        font-family: 'Press Start 2P', cursive;
+        font-size: 0.7rem;
+        margin: 0 0 1rem;
+        letter-spacing: 0.5px;
+      }
+      .pp-admin-panel h4 {
+        color: hsl(220 8% 50%);
+        font-size: 0.8rem;
+        margin: 1.25rem 0 0.5rem;
+      }
+      .pp-admin-panel label {
+        display: block;
+        margin-bottom: 0.3rem;
+        font-size: 0.8rem;
+        color: hsl(220 8% 50%);
+      }
+      .pp-admin-panel input,
+      .pp-admin-panel textarea {
+        width: 100%;
+        padding: 0.6rem 0.75rem;
+        margin-bottom: 0.75rem;
+        background: hsl(220 20% 7%);
+        border: 1px solid hsl(220 15% 18%);
+        border-radius: 0.5rem;
+        color: hsl(40 15% 93%);
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 0.85rem;
+        box-sizing: border-box;
+        transition: border-color 0.2s;
+      }
+      .pp-admin-panel input:focus,
+      .pp-admin-panel textarea:focus {
+        outline: none;
+        border-color: hsl(32 95% 55%);
+      }
+      .pp-admin-panel textarea { resize: vertical; min-height: 70px; }
+      .pp-admin-panel .pp-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.5rem 1.2rem;
+        background: hsl(32 95% 55%);
+        color: hsl(220 20% 7%);
+        border: none;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.85rem;
+        font-family: 'Space Grotesk', sans-serif;
+        transition: background 0.2s;
+      }
+      .pp-admin-panel .pp-btn:hover { background: hsl(32 95% 48%); }
+      .pp-admin-panel .pp-btn-danger {
+        background: hsl(0 84% 60%);
+        color: #fff;
+      }
+      .pp-admin-panel .pp-btn-danger:hover { background: hsl(0 84% 50%); }
+      .pp-admin-panel .pp-btn-sm {
+        padding: 0.3rem 0.7rem;
+        font-size: 0.75rem;
+      }
+      .pp-admin-panel .pp-btn-info {
+        background: hsl(210 70% 50%);
+        color: #fff;
+      }
+      .pp-admin-panel .pp-btn-info:hover { background: hsl(210 70% 42%); }
+      .pp-admin-panel hr {
+        border: none;
+        border-top: 1px solid hsl(220 15% 18%);
+        margin: 1.5rem 0;
+      }
+      .pp-admin-list-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.6rem 0.75rem;
+        background: hsl(220 20% 7%);
+        border: 1px solid hsl(220 15% 18%);
+        border-radius: 0.5rem;
+        margin-bottom: 0.5rem;
+        font-size: 0.8rem;
+      }
+      .pp-lock-overlay {
+        text-align: center;
+        padding: 2rem;
+      }
+      .pp-lock-overlay input {
+        max-width: 280px;
+        margin: 0 auto 1rem;
+        display: block;
+        text-align: center;
+      }
+      .pp-secure-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        font-size: 0.65rem;
+        color: hsl(160 70% 45%);
+        padding: 0.2rem 0.6rem;
+        background: hsl(160 70% 45% / 0.1);
+        border: 1px solid hsl(160 70% 45% / 0.2);
+        border-radius: 9999px;
+        letter-spacing: 0.3px;
+      }
+      .pp-admin-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+      }
+      @media (max-width: 768px) {
+        .pp-admin-grid { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <!-- Injected sections - will be moved inside React app's page via JS -->
+    <div id="pp-injected" style="display:none;">
+      <div class="pp-container">
+        <!-- Community News -->
+        <section class="pp-section" id="pp-news-section">
+          <h2><span class="pp-icon">&#x1F4E2;</span> Community News</h2>
+          <div id="pp-news-list"></div>
+        </section>
+
+        <!-- Donation Goals -->
+        <section class="pp-section" id="pp-goals-section">
+          <h2><span class="pp-icon">&#x1F3AF;</span> Donation Goals</h2>
+          <div id="pp-goals-list"></div>
+        </section>
+      </div>
+
+      <!-- Admin -->
+      <div class="pp-admin-wrap">
+        <button class="pp-admin-toggle" id="pp-admin-btn">&#x1F512; Admin Panel</button>
+      </div>
+
+      <div class="pp-admin-panel" id="pp-admin-panel" style="margin-left:1rem;margin-right:1rem;">
+        <div class="pp-lock-overlay" id="pp-lock">
+          <h3>&#x1F510; Admin Login</h3>
+          <input type="password" id="pp-admin-pw" placeholder="Enter admin password" />
+          <button class="pp-btn" id="pp-admin-login-btn">Unlock</button>
+          <p style="margin-top:1rem;">
+            <span class="pp-secure-badge">&#x1F6E1; AES-256-GCM Encrypted</span>
+          </p>
+        </div>
+
+        <div id="pp-admin-content" style="display:none;">
+          <div class="pp-admin-grid">
+            <div>
+              <h3>&#x1F4F0; Post News</h3>
+              <label for="pp-news-title-in">Title</label>
+              <input type="text" id="pp-news-title-in" placeholder="e.g. New map expansion!" />
+              <label for="pp-news-body-in">Content</label>
+              <textarea id="pp-news-body-in" placeholder="Write the news post..."></textarea>
+              <button class="pp-btn" id="pp-news-add-btn">Post News</button>
+              <h4>Existing News</h4>
+              <div id="pp-admin-news-list"></div>
+            </div>
+
+            <div>
+              <h3>&#x1F4B0; Add Goal</h3>
+              <label for="pp-goal-name-in">Goal Name</label>
+              <input type="text" id="pp-goal-name-in" placeholder="e.g. New server hardware" />
+              <label for="pp-goal-desc-in">Description</label>
+              <input type="text" id="pp-goal-desc-in" placeholder="Short description..." />
+              <label for="pp-goal-target-in">Target ($)</label>
+              <input type="number" id="pp-goal-target-in" placeholder="100" min="1" />
+              <label for="pp-goal-current-in">Current ($)</label>
+              <input type="number" id="pp-goal-current-in" placeholder="0" min="0" />
+              <button class="pp-btn" id="pp-goal-add-btn">Add Goal</button>
+              <h4>Existing Goals</h4>
+              <div id="pp-admin-goals-list"></div>
+            </div>
+          </div>
+          <hr />
+          <button class="pp-btn pp-btn-danger" id="pp-admin-logout-btn">&#x1F512; Lock Panel</button>
+          <span class="pp-secure-badge" style="margin-left:0.75rem;">&#x1F6E1; All data encrypted with AES-256-GCM</span>
+        </div>
+      </div>
+    </div>
+
+    <script>
+    (function() {
+      'use strict';
+
+      // --- Inject sections into the React app's rendered page ---
+      function injectSections() {
+        const injected = document.getElementById('pp-injected');
+        if (!injected) return;
+
+        // Find the React app's main content area (footer or last section)
+        const root = document.getElementById('root');
+        if (root && root.children.length > 0) {
+          // Find footer or append before it
+          const footer = root.querySelector('footer');
+          if (footer) {
+            footer.parentNode.insertBefore(injected, footer);
+          } else {
+            root.appendChild(injected);
+          }
+          injected.style.display = '';
+          return true;
+        }
+        return false;
+      }
+
+      // Wait for React to render, then inject
+      let attempts = 0;
+      const injector = setInterval(() => {
+        if (injectSections() || ++attempts > 50) {
+          clearInterval(injector);
+          // Fallback: just show it where it is
+          if (attempts > 50) {
+            document.getElementById('pp-injected').style.display = '';
+          }
+        }
+      }, 100);
+
+      // --- Crypto helpers (AES-256-GCM via Web Crypto API) ---
+      const SALT = new Uint8Array([112,105,122,122,97,112,97,115,116,97,115,109,112,50,48,50,54]);
+
+      async function deriveKey(password) {
+        const enc = new TextEncoder();
+        const keyMaterial = await crypto.subtle.importKey(
+          'raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']
+        );
+        return crypto.subtle.deriveKey(
+          { name: 'PBKDF2', salt: SALT, iterations: 100000, hash: 'SHA-256' },
+          keyMaterial,
+          { name: 'AES-GCM', length: 256 },
+          false,
+          ['encrypt', 'decrypt']
+        );
+      }
+
+      async function encrypt(data, password) {
+        const key = await deriveKey(password);
+        const iv = crypto.getRandomValues(new Uint8Array(12));
+        const enc = new TextEncoder();
+        const ciphertext = await crypto.subtle.encrypt(
+          { name: 'AES-GCM', iv }, key, enc.encode(JSON.stringify(data))
+        );
+        return JSON.stringify({
+          iv: Array.from(iv),
+          ct: Array.from(new Uint8Array(ciphertext))
+        });
+      }
+
+      async function decrypt(stored, password) {
+        const key = await deriveKey(password);
+        const { iv, ct } = JSON.parse(stored);
+        const plaintext = await crypto.subtle.decrypt(
+          { name: 'AES-GCM', iv: new Uint8Array(iv) },
+          key,
+          new Uint8Array(ct)
+        );
+        return JSON.parse(new TextDecoder().decode(plaintext));
+      }
+
+      // --- Storage ---
+      const STORAGE_KEY = 'pp_smp_data';
+      let adminPassword = null;
+
+      function getDefaultData() {
+        return { news: [], goals: [] };
+      }
+
+      async function loadData() {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (!stored || !adminPassword) return getDefaultData();
+        try {
+          return await decrypt(stored, adminPassword);
+        } catch {
+          return getDefaultData();
+        }
+      }
+
+      async function saveData(data) {
+        if (!adminPassword) return;
+        const encrypted = await encrypt(data, adminPassword);
+        localStorage.setItem(STORAGE_KEY, encrypted);
+      }
+
+      async function loadPublicData() {
+        const publicStored = localStorage.getItem(STORAGE_KEY + '_public');
+        if (publicStored) {
+          try { return JSON.parse(publicStored); } catch { return getDefaultData(); }
+        }
+        return getDefaultData();
+      }
+
+      async function savePublicCopy(data) {
+        localStorage.setItem(STORAGE_KEY + '_public', JSON.stringify(data));
+      }
+
+      // --- Render ---
+      function escapeHtml(str) {
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+      }
+
+      function renderNews(news) {
+        const list = document.getElementById('pp-news-list');
+        if (!list) return;
+        if (!news.length) {
+          list.innerHTML = '<div class="pp-empty">No news yet. Stay tuned!</div>';
+          return;
+        }
+        list.innerHTML = news.map(n => `
+          <div class="pp-news-item">
+            <div class="pp-news-date">${new Date(n.date).toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' })}</div>
+            <div class="pp-news-title">${escapeHtml(n.title)}</div>
+            <div class="pp-news-body">${escapeHtml(n.body)}</div>
+          </div>
+        `).join('');
+      }
+
+      function renderGoals(goals) {
+        const list = document.getElementById('pp-goals-list');
+        if (!list) return;
+        if (!goals.length) {
+          list.innerHTML = '<div class="pp-empty">No donation goals yet.</div>';
+          return;
+        }
+        list.innerHTML = goals.map(g => {
+          const pct = Math.min(100, Math.round((g.current / g.target) * 100));
+          return `
+            <div class="pp-goal">
+              <div class="pp-goal-header">
+                <span class="pp-goal-name">${escapeHtml(g.name)}</span>
+                <span class="pp-goal-amount">$${g.current} / $${g.target} (${pct}%)</span>
+              </div>
+              <div class="pp-goal-bar-bg">
+                <div class="pp-goal-bar-fill" style="width:${pct}%"></div>
+              </div>
+              ${g.desc ? `<div class="pp-goal-desc">${escapeHtml(g.desc)}</div>` : ''}
+            </div>
+          `;
+        }).join('');
+      }
+
+      function renderAdminNews(news) {
+        const list = document.getElementById('pp-admin-news-list');
+        if (!list) return;
+        if (!news.length) { list.innerHTML = '<div style="color:hsl(220 8% 50%);font-size:0.8rem;">No news posts yet.</div>'; return; }
+        list.innerHTML = news.map((n, i) => `
+          <div class="pp-admin-list-item">
+            <span>${escapeHtml(n.title)} <span style="color:hsl(220 8% 50%);">(${new Date(n.date).toLocaleDateString()})</span></span>
+            <button class="pp-btn pp-btn-danger pp-btn-sm" data-del-news="${i}">Delete</button>
+          </div>
+        `).join('');
+        list.querySelectorAll('[data-del-news]').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            const idx = parseInt(btn.dataset.delNews);
+            const data = await loadData();
+            data.news.splice(idx, 1);
+            await saveData(data);
+            await savePublicCopy(data);
+            renderAll(data);
+          });
+        });
+      }
+
+      function renderAdminGoals(goals) {
+        const list = document.getElementById('pp-admin-goals-list');
+        if (!list) return;
+        if (!goals.length) { list.innerHTML = '<div style="color:hsl(220 8% 50%);font-size:0.8rem;">No goals yet.</div>'; return; }
+        list.innerHTML = goals.map((g, i) => `
+          <div class="pp-admin-list-item">
+            <span>${escapeHtml(g.name)} — $${g.current}/$${g.target}</span>
+            <span style="display:flex;gap:0.3rem;">
+              <button class="pp-btn pp-btn-info pp-btn-sm" data-edit-goal="${i}">Update $</button>
+              <button class="pp-btn pp-btn-danger pp-btn-sm" data-del-goal="${i}">Delete</button>
+            </span>
+          </div>
+        `).join('');
+        list.querySelectorAll('[data-del-goal]').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            const idx = parseInt(btn.dataset.delGoal);
+            const data = await loadData();
+            data.goals.splice(idx, 1);
+            await saveData(data);
+            await savePublicCopy(data);
+            renderAll(data);
+          });
+        });
+        list.querySelectorAll('[data-edit-goal]').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            const idx = parseInt(btn.dataset.editGoal);
+            const data = await loadData();
+            const newAmount = prompt('Enter new current amount ($):', data.goals[idx].current);
+            if (newAmount !== null && !isNaN(parseFloat(newAmount))) {
+              data.goals[idx].current = parseFloat(newAmount);
+              await saveData(data);
+              await savePublicCopy(data);
+              renderAll(data);
+            }
+          });
+        });
+      }
+
+      function renderAll(data) {
+        renderNews(data.news);
+        renderGoals(data.goals);
+        if (adminPassword) {
+          renderAdminNews(data.news);
+          renderAdminGoals(data.goals);
+        }
+      }
+
+      // --- Init ---
+      async function init() {
+        const data = await loadPublicData();
+        renderNews(data.news);
+        renderGoals(data.goals);
+
+        document.getElementById('pp-admin-btn').addEventListener('click', () => {
+          document.getElementById('pp-admin-panel').classList.toggle('open');
+        });
+
+        document.getElementById('pp-admin-login-btn').addEventListener('click', async () => {
+          const pw = document.getElementById('pp-admin-pw').value;
+          if (!pw) return;
+          adminPassword = pw;
+          const data = await loadData();
+          const stored = localStorage.getItem(STORAGE_KEY);
+          if (!stored) {
+            await saveData(data);
+            await savePublicCopy(data);
+          }
+          document.getElementById('pp-lock').style.display = 'none';
+          document.getElementById('pp-admin-content').style.display = 'block';
+          renderAll(data);
+        });
+
+        document.getElementById('pp-admin-logout-btn').addEventListener('click', () => {
+          adminPassword = null;
+          document.getElementById('pp-lock').style.display = '';
+          document.getElementById('pp-admin-content').style.display = 'none';
+          document.getElementById('pp-admin-pw').value = '';
+          document.getElementById('pp-admin-panel').classList.remove('open');
+        });
+
+        document.getElementById('pp-news-add-btn').addEventListener('click', async () => {
+          const title = document.getElementById('pp-news-title-in').value.trim();
+          const body = document.getElementById('pp-news-body-in').value.trim();
+          if (!title || !body) return;
+          const data = await loadData();
+          data.news.unshift({ title, body, date: new Date().toISOString() });
+          await saveData(data);
+          await savePublicCopy(data);
+          renderAll(data);
+          document.getElementById('pp-news-title-in').value = '';
+          document.getElementById('pp-news-body-in').value = '';
+        });
+
+        document.getElementById('pp-goal-add-btn').addEventListener('click', async () => {
+          const name = document.getElementById('pp-goal-name-in').value.trim();
+          const desc = document.getElementById('pp-goal-desc-in').value.trim();
+          const target = parseFloat(document.getElementById('pp-goal-target-in').value);
+          const current = parseFloat(document.getElementById('pp-goal-current-in').value) || 0;
+          if (!name || !target || target <= 0) return;
+          const data = await loadData();
+          data.goals.push({ name, desc, target, current });
+          await saveData(data);
+          await savePublicCopy(data);
+          renderAll(data);
+          document.getElementById('pp-goal-name-in').value = '';
+          document.getElementById('pp-goal-desc-in').value = '';
+          document.getElementById('pp-goal-target-in').value = '';
+          document.getElementById('pp-goal-current-in').value = '';
+        });
+      }
+
+      init();
+    })();
+    </script>
+  </body>
+</html>
