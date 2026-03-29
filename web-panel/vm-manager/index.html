@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VM Manager - Pizza Pasta SMP</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: hsl(220 20% 7%);
+      color: hsl(40 15% 93%);
+      font-family: 'Space Grotesk', sans-serif;
+      min-height: 100vh;
+    }
+
+    .header {
+      border-bottom: 1px solid hsl(220 15% 18%);
+      background: hsl(220 18% 11% / 0.8);
+      backdrop-filter: blur(12px);
+      position: sticky; top: 0; z-index: 40;
+    }
+    .header-inner {
+      max-width: 1100px; margin: 0 auto; padding: 0 1.5rem;
+      height: 56px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .header-title {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 0.7rem; color: hsl(32 95% 55%);
+      display: flex; align-items: center; gap: 0.6rem;
+    }
+    .header-back {
+      color: hsl(220 8% 50%); text-decoration: none; font-size: 0.85rem;
+      display: flex; align-items: center; gap: 0.4rem;
+      transition: color 0.2s;
+    }
+    .header-back:hover { color: hsl(40 15% 93%); }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 1.5rem; }
+
+    .card {
+      background: hsl(220 18% 11%);
+      border: 1px solid hsl(220 15% 18%);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      margin-bottom: 1.25rem;
+    }
+    .card h2 {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 0.7rem; color: hsl(32 95% 55%);
+      margin-bottom: 1rem; letter-spacing: 0.5px;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .card p.desc {
+      font-size: 0.85rem; color: hsl(220 8% 50%); line-height: 1.6; margin-bottom: 1rem;
+    }
+
+    label {
+      display: block; font-size: 0.8rem; color: hsl(220 8% 50%);
+      margin-bottom: 0.3rem; margin-top: 0.75rem;
+    }
+    label:first-of-type { margin-top: 0; }
+
+    input, select, textarea {
+      width: 100%; padding: 0.6rem 0.75rem;
+      background: hsl(220 20% 7%);
+      border: 1px solid hsl(220 15% 18%);
+      border-radius: 0.5rem;
+      color: hsl(40 15% 93%);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.85rem;
+      transition: border-color 0.2s;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none; border-color: hsl(32 95% 55%);
+    }
+    textarea { resize: vertical; min-height: 60px; }
+    select { cursor: pointer; }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.55rem 1.2rem;
+      border: none; border-radius: 0.5rem; cursor: pointer;
+      font-weight: 600; font-size: 0.85rem;
+      font-family: 'Space Grotesk', sans-serif;
+      transition: background 0.2s, opacity 0.2s;
+    }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-primary { background: hsl(32 95% 55%); color: hsl(220 20% 7%); }
+    .btn-primary:hover:not(:disabled) { background: hsl(32 95% 48%); }
+    .btn-success { background: hsl(160 70% 45%); color: hsl(220 20% 7%); }
+    .btn-success:hover:not(:disabled) { background: hsl(160 70% 38%); }
+    .btn-danger { background: hsl(0 84% 60%); color: #fff; }
+    .btn-danger:hover:not(:disabled) { background: hsl(0 84% 50%); }
+    .btn-ghost {
+      background: transparent; color: hsl(220 8% 50%);
+      border: 1px solid hsl(220 15% 18%);
+    }
+    .btn-ghost:hover:not(:disabled) {
+      background: hsl(32 95% 55% / 0.1);
+      border-color: hsl(32 95% 55% / 0.3);
+      color: hsl(32 95% 55%);
+    }
+    .btn-sm { padding: 0.35rem 0.75rem; font-size: 0.75rem; }
+
+    .badge {
+      display: inline-block; padding: 0.15rem 0.5rem;
+      border-radius: 9999px; font-size: 0.7rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.3px;
+    }
+    .badge-running { background: hsl(160 70% 45% / 0.15); color: hsl(160 70% 45%); }
+    .badge-stopped { background: hsl(220 8% 50% / 0.15); color: hsl(220 8% 50%); }
+    .badge-starting, .badge-provisioning { background: hsl(32 95% 55% / 0.15); color: hsl(32 95% 55%); }
+    .badge-stopping, .badge-terminating { background: hsl(0 84% 60% / 0.15); color: hsl(0 84% 60%); }
+    .badge-terminated { background: hsl(0 84% 60% / 0.1); color: hsl(0 60% 50%); }
+
+    .vm-card {
+      background: hsl(220 20% 7%);
+      border: 1px solid hsl(220 15% 18%);
+      border-radius: 0.5rem;
+      padding: 1rem 1.25rem;
+      margin-bottom: 0.75rem;
+      transition: border-color 0.2s;
+    }
+    .vm-card:hover { border-color: hsl(220 15% 25%); }
+    .vm-header {
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.75rem;
+    }
+    .vm-name { font-weight: 600; font-size: 1rem; }
+    .vm-details {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 0.5rem; margin-bottom: 0.75rem;
+    }
+    .vm-detail-item {
+      font-size: 0.8rem;
+    }
+    .vm-detail-label { color: hsl(220 8% 50%); }
+    .vm-detail-value { color: hsl(40 15% 93%); font-weight: 500; }
+    .vm-ip {
+      font-family: monospace; color: hsl(160 70% 45%); cursor: pointer;
+      border-bottom: 1px dashed hsl(160 70% 45% / 0.3);
+    }
+    .vm-ip:hover { color: hsl(160 70% 55%); }
+    .vm-actions { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+
+    .status-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1.25rem;
+    }
+    .status-connected {
+      display: flex; align-items: center; gap: 0.4rem;
+      font-size: 0.8rem; color: hsl(160 70% 45%);
+    }
+    .status-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: hsl(160 70% 45%); animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .loading {
+      text-align: center; padding: 2rem; color: hsl(220 8% 50%);
+      font-size: 0.85rem;
+    }
+    .spinner {
+      display: inline-block; width: 20px; height: 20px;
+      border: 2px solid hsl(220 15% 18%);
+      border-top-color: hsl(32 95% 55%);
+      border-radius: 50%; animation: spin 0.8s linear infinite;
+      margin-right: 0.5rem; vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .toast {
+      position: fixed; bottom: 1.5rem; right: 1.5rem;
+      padding: 0.75rem 1.25rem;
+      border-radius: 0.5rem; font-size: 0.85rem;
+      z-index: 1000; animation: slideIn 0.3s ease;
+      max-width: 400px;
+    }
+    .toast-success { background: hsl(160 70% 25%); border: 1px solid hsl(160 70% 45%); color: hsl(160 70% 90%); }
+    .toast-error { background: hsl(0 60% 25%); border: 1px solid hsl(0 84% 60%); color: hsl(0 60% 90%); }
+    .toast-info { background: hsl(220 40% 25%); border: 1px solid hsl(220 60% 50%); color: hsl(220 40% 90%); }
+    @keyframes slideIn { from { transform: translateY(1rem); opacity: 0; } }
+
+    .form-row {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+    }
+    @media (max-width: 600px) {
+      .form-row { grid-template-columns: 1fr; }
+    }
+
+    .hidden { display: none !important; }
+
+    .empty-state {
+      text-align: center; padding: 3rem 1rem; color: hsl(220 8% 50%);
+      font-style: italic; font-size: 0.85rem;
+    }
+
+    .confirm-overlay {
+      position: fixed; inset: 0; background: hsl(220 20% 7% / 0.85);
+      display: flex; align-items: center; justify-content: center; z-index: 100;
+    }
+    .confirm-box {
+      background: hsl(220 18% 11%);
+      border: 1px solid hsl(0 84% 60% / 0.3);
+      border-radius: 0.75rem; padding: 1.5rem; max-width: 420px; width: 90%;
+    }
+    .confirm-box h3 {
+      color: hsl(0 84% 60%); font-family: 'Press Start 2P', cursive;
+      font-size: 0.65rem; margin-bottom: 1rem;
+    }
+    .confirm-box p { font-size: 0.85rem; color: hsl(220 8% 50%); margin-bottom: 1rem; line-height: 1.5; }
+    .confirm-actions { display: flex; gap: 0.5rem; justify-content: flex-end; }
+
+    .setup-info {
+      background: hsl(220 20% 7%);
+      border: 1px solid hsl(220 15% 18%);
+      border-radius: 0.5rem;
+      padding: 1rem 1.25rem;
+      margin-top: 1rem;
+      font-size: 0.8rem;
+      color: hsl(220 8% 50%);
+      line-height: 1.6;
+    }
+    .setup-info code {
+      background: hsl(220 15% 15%);
+      padding: 0.1rem 0.35rem;
+      border-radius: 0.25rem;
+      font-size: 0.75rem;
+      color: hsl(32 95% 55%);
+    }
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <div class="header-title">&#x1F5A5; VM MANAGER</div>
+    <a href="/pizza-pasta-smp/" class="header-back">&#x2190; Back to site</a>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- Setup / PAT Entry -->
+  <div id="setup-section" class="card">
+    <h2>&#x1F511; Connect to GitHub</h2>
+    <p class="desc">
+      Enter a GitHub Personal Access Token to manage Oracle Cloud VMs via GitHub Actions.
+    </p>
+    <label for="pat-input">GitHub PAT</label>
+    <input type="password" id="pat-input" placeholder="ghp_xxxxxxxxxxxx or github_pat_xxxx" />
+    <div class="setup-info">
+      <strong>Required token scopes:</strong><br>
+      Create a <strong>Fine-grained PAT</strong> at GitHub Settings &gt; Developer settings &gt; Personal access tokens.<br>
+      Repository: <code>ddunreel/pizza-pasta-smp</code><br>
+      Permissions: <code>Actions (Read &amp; Write)</code>
+    </div>
+    <br>
+    <button class="btn btn-primary" id="connect-btn">Connect</button>
+  </div>
+
+  <!-- Dashboard (hidden until connected) -->
+  <div id="dashboard" class="hidden">
+
+    <div class="status-bar">
+      <div class="status-connected">
+        <span class="status-dot"></span> Connected to GitHub Actions
+      </div>
+      <div style="display:flex;gap:0.5rem;">
+        <button class="btn btn-ghost btn-sm" id="refresh-btn">&#x21BB; Refresh</button>
+        <button class="btn btn-ghost btn-sm" id="disconnect-btn">&#x1F512; Disconnect</button>
+      </div>
+    </div>
+
+    <!-- VM List -->
+    <div class="card">
+      <h2>&#x1F4BB; Your Instances</h2>
+      <div id="vm-list">
+        <div class="empty-state">Click "Refresh" to load your VMs from Oracle Cloud.</div>
+      </div>
+    </div>
+
+    <!-- Create VM -->
+    <div class="card">
+      <h2>&#x2795; Create New VM</h2>
+      <p class="desc">Launch a new Oracle Cloud Free Tier instance.</p>
+
+      <div class="form-row">
+        <div>
+          <label for="vm-name">Display Name</label>
+          <input type="text" id="vm-name" placeholder="e.g. my-server" />
+        </div>
+        <div>
+          <label for="vm-shape">Shape</label>
+          <select id="vm-shape">
+            <option value="VM.Standard.A1.Flex">ARM A1 Flex (up to 4 OCPU / 24GB)</option>
+            <option value="VM.Standard.E2.1.Micro">AMD Micro (1/8 OCPU / 1GB)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row" id="flex-config">
+        <div>
+          <label for="vm-ocpus">OCPUs</label>
+          <input type="number" id="vm-ocpus" value="4" min="1" max="4" />
+        </div>
+        <div>
+          <label for="vm-memory">Memory (GB)</label>
+          <input type="number" id="vm-memory" value="24" min="1" max="24" />
+        </div>
+      </div>
+
+      <label for="vm-ad">Availability Domain</label>
+      <input type="text" id="vm-ad" placeholder="e.g. Tnci:EU-FRANKFURT-1-AD-1" />
+
+      <label for="vm-subnet">Subnet OCID</label>
+      <input type="text" id="vm-subnet" placeholder="ocid1.subnet.oc1..." />
+
+      <label for="vm-image">Image OCID</label>
+      <input type="text" id="vm-image" placeholder="ocid1.image.oc1..." />
+
+      <label for="vm-ssh">SSH Public Key</label>
+      <textarea id="vm-ssh" placeholder="ssh-ed25519 AAAA... or ssh-rsa AAAA..."></textarea>
+
+      <br>
+      <button class="btn btn-success" id="create-btn">Create VM</button>
+    </div>
+
+    <!-- OCI Setup Help -->
+    <div class="card">
+      <h2>&#x2699; OCI Setup</h2>
+      <p class="desc">Add these secrets to your GitHub repo (<code>Settings &gt; Secrets &gt; Actions</code>):</p>
+      <div class="setup-info">
+        <code>OCI_TENANCY_OCID</code> - Your tenancy OCID<br>
+        <code>OCI_USER_OCID</code> - Your OCI user OCID<br>
+        <code>OCI_FINGERPRINT</code> - API key fingerprint<br>
+        <code>OCI_PRIVATE_KEY</code> - Full PEM private key content<br>
+        <code>OCI_REGION</code> - e.g. eu-frankfurt-1<br>
+        <code>OCI_COMPARTMENT_OCID</code> - Compartment for VMs<br><br>
+        Generate an API key in OCI Console &gt; Profile &gt; API Keys &gt; Add API Key.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm dialog (hidden) -->
+<div id="confirm-overlay" class="confirm-overlay hidden">
+  <div class="confirm-box">
+    <h3>&#x26A0; Confirm Terminate</h3>
+    <p id="confirm-msg">Are you sure you want to terminate this instance? This cannot be undone.</p>
+    <div class="confirm-actions">
+      <button class="btn btn-ghost btn-sm" id="confirm-cancel">Cancel</button>
+      <button class="btn btn-danger btn-sm" id="confirm-ok">Terminate</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  const OWNER = 'ddunreel';
+  const REPO = 'pizza-pasta-smp';
+  const API = 'https://api.github.com';
+
+  let token = localStorage.getItem('vm_gh_pat') || '';
+
+  // --- GitHub API helpers ---
+
+  async function ghFetch(path, opts = {}) {
+    const res = await fetch(`${API}${path}`, {
+      ...opts,
+      headers: {
+        'Accept': 'application/vnd.github+json',
+        'Authorization': `Bearer ${token}`,
+        'X-GitHub-Api-Version': '2022-11-28',
+        ...(opts.headers || {})
+      }
+    });
+    if (!res.ok) {
+      const body = await res.text().catch(() => '');
+      throw new Error(`GitHub API ${res.status}: ${body.slice(0, 200)}`);
+    }
+    if (res.status === 204) return null;
+    return res.json();
+  }
+
+  async function triggerWorkflow(file, inputs = {}) {
+    const before = new Date().toISOString();
+    await ghFetch(`/repos/${OWNER}/${REPO}/actions/workflows/${file}/dispatches`, {
+      method: 'POST',
+      body: JSON.stringify({ ref: 'main', inputs })
+    });
+    // Wait a moment then find the run
+    await sleep(2000);
+    return findRun(file, before);
+  }
+
+  async function findRun(file, after, retries = 15) {
+    for (let i = 0; i < retries; i++) {
+      const data = await ghFetch(
+        `/repos/${OWNER}/${REPO}/actions/workflows/${file}/runs?per_page=5&event=workflow_dispatch`
+      );
+      const run = data.workflow_runs.find(r => r.created_at >= after);
+      if (run) return run.id;
+      await sleep(2000);
+    }
+    throw new Error('Could not find workflow run. Try again.');
+  }
+
+  async function pollRun(runId, timeoutMs = 300000) {
+    const start = Date.now();
+    while (Date.now() - start < timeoutMs) {
+      const run = await ghFetch(`/repos/${OWNER}/${REPO}/actions/runs/${runId}`);
+      if (run.status === 'completed') {
+        if (run.conclusion !== 'success') {
+          throw new Error(`Workflow failed: ${run.conclusion}`);
+        }
+        return run;
+      }
+      await sleep(4000);
+    }
+    throw new Error('Workflow timed out after 5 minutes.');
+  }
+
+  async function downloadArtifact(runId, artifactName) {
+    const data = await ghFetch(`/repos/${OWNER}/${REPO}/actions/runs/${runId}/artifacts`);
+    const art = data.artifacts.find(a => a.name === artifactName);
+    if (!art) throw new Error(`Artifact "${artifactName}" not found.`);
+
+    // Download zip
+    const res = await fetch(`${API}/repos/${OWNER}/${REPO}/actions/artifacts/${art.id}/zip`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/vnd.github+json'
+      }
+    });
+    if (!res.ok) throw new Error(`Failed to download artifact: ${res.status}`);
+
+    const blob = await res.blob();
+    return extractJsonFromZip(blob);
+  }
+
+  async function extractJsonFromZip(blob) {
+    const buf = await blob.arrayBuffer();
+    const view = new DataView(buf);
+
+    // Find local file header (PK\x03\x04)
+    let offset = 0;
+    while (offset < buf.byteLength - 4) {
+      if (view.getUint32(offset, true) === 0x04034b50) break;
+      offset++;
+    }
+    if (offset >= buf.byteLength - 4) throw new Error('Invalid zip');
+
+    const comprMethod = view.getUint16(offset + 8, true);
+    const compSize = view.getUint32(offset + 18, true);
+    const fnameLen = view.getUint16(offset + 26, true);
+    const extraLen = view.getUint16(offset + 28, true);
+    const dataStart = offset + 30 + fnameLen + extraLen;
+    const compData = new Uint8Array(buf, dataStart, compSize);
+
+    let jsonStr;
+    if (comprMethod === 0) {
+      // Stored (no compression)
+      jsonStr = new TextDecoder().decode(compData);
+    } else if (comprMethod === 8) {
+      // Deflate
+      const ds = new DecompressionStream('deflate-raw');
+      const writer = ds.writable.getWriter();
+      const reader = ds.readable.getReader();
+      writer.write(compData);
+      writer.close();
+      const chunks = [];
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        chunks.push(value);
+      }
+      const total = chunks.reduce((s, c) => s + c.length, 0);
+      const result = new Uint8Array(total);
+      let pos = 0;
+      for (const c of chunks) { result.set(c, pos); pos += c.length; }
+      jsonStr = new TextDecoder().decode(result);
+    } else {
+      throw new Error(`Unsupported zip compression method: ${comprMethod}`);
+    }
+
+    return JSON.parse(jsonStr);
+  }
+
+  async function executeWorkflow(file, inputs, artifactName) {
+    const runId = await triggerWorkflow(file, inputs);
+    await pollRun(runId);
+    return downloadArtifact(runId, artifactName);
+  }
+
+  function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+  // --- Toast ---
+
+  function showToast(msg, type = 'info') {
+    const el = document.createElement('div');
+    el.className = `toast toast-${type}`;
+    el.textContent = msg;
+    document.body.appendChild(el);
+    setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity 0.3s'; }, 3000);
+    setTimeout(() => el.remove(), 3500);
+  }
+
+  // --- Rendering ---
+
+  function badgeClass(state) {
+    const s = (state || '').toLowerCase();
+    if (s === 'running') return 'badge-running';
+    if (s === 'stopped') return 'badge-stopped';
+    if (s.includes('start') || s === 'provisioning') return 'badge-starting';
+    if (s.includes('stop') || s.includes('terminat')) return 'badge-stopping';
+    if (s === 'terminated') return 'badge-terminated';
+    return 'badge-stopped';
+  }
+
+  function esc(str) {
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+  }
+
+  function renderVMs(instances) {
+    const list = document.getElementById('vm-list');
+    if (!instances || !instances.length) {
+      list.innerHTML = '<div class="empty-state">No instances found in your compartment.</div>';
+      return;
+    }
+
+    list.innerHTML = instances.map(vm => `
+      <div class="vm-card" data-id="${esc(vm.id)}">
+        <div class="vm-header">
+          <span class="vm-name">${esc(vm.display_name)}</span>
+          <span class="badge ${badgeClass(vm.lifecycle_state)}">${esc(vm.lifecycle_state)}</span>
+        </div>
+        <div class="vm-details">
+          <div class="vm-detail-item">
+            <div class="vm-detail-label">Shape</div>
+            <div class="vm-detail-value">${esc(vm.shape)}</div>
+          </div>
+          <div class="vm-detail-item">
+            <div class="vm-detail-label">CPU / RAM</div>
+            <div class="vm-detail-value">${vm.ocpus || '?'} OCPU / ${vm.memory_gb || '?'} GB</div>
+          </div>
+          <div class="vm-detail-item">
+            <div class="vm-detail-label">Public IP</div>
+            <div class="vm-detail-value">
+              ${vm.public_ip
+                ? `<span class="vm-ip" onclick="navigator.clipboard.writeText('${esc(vm.public_ip)}').then(()=>{})" title="Click to copy">${esc(vm.public_ip)}</span>`
+                : '<span style="color:hsl(220 8% 50%)">None</span>'}
+            </div>
+          </div>
+          <div class="vm-detail-item">
+            <div class="vm-detail-label">Created</div>
+            <div class="vm-detail-value">${vm.time_created ? new Date(vm.time_created).toLocaleDateString() : '?'}</div>
+          </div>
+        </div>
+        <div class="vm-actions">
+          ${vm.lifecycle_state === 'STOPPED' ? `<button class="btn btn-success btn-sm" onclick="vmAction('${esc(vm.id)}','START')">&#x25B6; Start</button>` : ''}
+          ${vm.lifecycle_state === 'RUNNING' ? `<button class="btn btn-ghost btn-sm" onclick="vmAction('${esc(vm.id)}','STOP')">&#x23F9; Stop</button>` : ''}
+          ${vm.lifecycle_state === 'RUNNING' ? `<button class="btn btn-ghost btn-sm" onclick="vmAction('${esc(vm.id)}','SOFTRESET')">&#x21BB; Restart</button>` : ''}
+          ${vm.lifecycle_state !== 'TERMINATED' && vm.lifecycle_state !== 'TERMINATING' ? `<button class="btn btn-danger btn-sm" onclick="confirmTerminate('${esc(vm.id)}','${esc(vm.display_name)}')">&#x1F5D1; Terminate</button>` : ''}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function setLoading(el, msg) {
+    el.innerHTML = `<div class="loading"><span class="spinner"></span>${esc(msg)}</div>`;
+  }
+
+  // --- Actions ---
+
+  async function refreshVMs() {
+    const list = document.getElementById('vm-list');
+    const btn = document.getElementById('refresh-btn');
+    btn.disabled = true;
+    setLoading(list, 'Fetching instances from Oracle Cloud... (30-90s)');
+    try {
+      const result = await executeWorkflow('oci-vm-status.yml', {}, 'vm-status-result');
+      renderVMs(result.instances);
+      showToast(`Found ${result.instances.length} instance(s)`, 'success');
+    } catch (e) {
+      list.innerHTML = `<div class="empty-state" style="color:hsl(0 84% 60%);">Error: ${esc(e.message)}</div>`;
+      showToast(e.message, 'error');
+    }
+    btn.disabled = false;
+  }
+
+  window.vmAction = async function(instanceId, action) {
+    showToast(`Sending ${action} command...`, 'info');
+    try {
+      const result = await executeWorkflow('oci-vm-action.yml', {
+        instance_id: instanceId,
+        action: action
+      }, 'vm-action-result');
+      if (result.status === 'error') {
+        showToast(result.error_message, 'error');
+      } else {
+        showToast(`${action} executed. New state: ${result.lifecycle_state}`, 'success');
+        refreshVMs();
+      }
+    } catch (e) {
+      showToast(e.message, 'error');
+    }
+  };
+
+  let pendingTerminate = null;
+
+  window.confirmTerminate = function(id, name) {
+    pendingTerminate = id;
+    document.getElementById('confirm-msg').textContent =
+      `Are you sure you want to terminate "${name}"? This cannot be undone.`;
+    document.getElementById('confirm-overlay').classList.remove('hidden');
+  };
+
+  document.getElementById('confirm-cancel').addEventListener('click', () => {
+    pendingTerminate = null;
+    document.getElementById('confirm-overlay').classList.add('hidden');
+  });
+
+  document.getElementById('confirm-ok').addEventListener('click', () => {
+    document.getElementById('confirm-overlay').classList.add('hidden');
+    if (pendingTerminate) {
+      window.vmAction(pendingTerminate, 'TERMINATE');
+      pendingTerminate = null;
+    }
+  });
+
+  async function createVM() {
+    const btn = document.getElementById('create-btn');
+    const name = document.getElementById('vm-name').value.trim();
+    const shape = document.getElementById('vm-shape').value;
+    const ocpus = document.getElementById('vm-ocpus').value;
+    const memory = document.getElementById('vm-memory').value;
+    const ad = document.getElementById('vm-ad').value.trim();
+    const subnet = document.getElementById('vm-subnet').value.trim();
+    const image = document.getElementById('vm-image').value.trim();
+    const ssh = document.getElementById('vm-ssh').value.trim();
+
+    if (!name || !ad || !subnet || !image || !ssh) {
+      showToast('Please fill in all fields.', 'error');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Creating... (30-90s)';
+    showToast('Launching VM workflow...', 'info');
+
+    try {
+      const result = await executeWorkflow('oci-vm-create.yml', {
+        display_name: name,
+        shape: shape,
+        ocpus: ocpus,
+        memory_gb: memory,
+        ssh_public_key: ssh,
+        image_id: image,
+        subnet_id: subnet,
+        availability_domain: ad
+      }, 'vm-create-result');
+
+      if (result.status === 'error') {
+        showToast(result.error_message, 'error');
+      } else {
+        showToast(`VM "${name}" created! State: ${result.lifecycle_state}`, 'success');
+        refreshVMs();
+      }
+    } catch (e) {
+      showToast(e.message, 'error');
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'Create VM';
+  }
+
+  // --- Shape toggle ---
+  document.getElementById('vm-shape').addEventListener('change', function() {
+    const flex = document.getElementById('flex-config');
+    flex.classList.toggle('hidden', this.value !== 'VM.Standard.A1.Flex');
+  });
+
+  // --- Connect / Disconnect ---
+
+  function showDashboard() {
+    document.getElementById('setup-section').classList.add('hidden');
+    document.getElementById('dashboard').classList.remove('hidden');
+  }
+
+  function showSetup() {
+    document.getElementById('setup-section').classList.remove('hidden');
+    document.getElementById('dashboard').classList.add('hidden');
+  }
+
+  document.getElementById('connect-btn').addEventListener('click', async () => {
+    const pat = document.getElementById('pat-input').value.trim();
+    if (!pat) { showToast('Please enter a PAT.', 'error'); return; }
+
+    // Validate token
+    try {
+      token = pat;
+      await ghFetch(`/repos/${OWNER}/${REPO}`);
+      localStorage.setItem('vm_gh_pat', pat);
+      showToast('Connected!', 'success');
+      showDashboard();
+    } catch (e) {
+      token = '';
+      showToast('Invalid token or no access to repo.', 'error');
+    }
+  });
+
+  document.getElementById('disconnect-btn').addEventListener('click', () => {
+    localStorage.removeItem('vm_gh_pat');
+    token = '';
+    showSetup();
+    showToast('Disconnected.', 'info');
+  });
+
+  document.getElementById('refresh-btn').addEventListener('click', refreshVMs);
+  document.getElementById('create-btn').addEventListener('click', createVM);
+
+  // --- Init ---
+  if (token) {
+    ghFetch(`/repos/${OWNER}/${REPO}`)
+      .then(() => showDashboard())
+      .catch(() => { token = ''; localStorage.removeItem('vm_gh_pat'); showSetup(); });
+  } else {
+    showSetup();
+  }
+
+})();
+</script>
+
+</body>
+</html>
