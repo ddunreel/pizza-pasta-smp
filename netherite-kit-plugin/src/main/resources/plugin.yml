@@ -1,0 +1,15 @@
+name: NetheriteKit
+version: 1.0.0
+main: com.davide.netheritekit.NetheriteKit
+api-version: "1.21"
+description: Gives a fully enchanted and trimmed netherite armor set
+commands:
+  netheritekit:
+    description: Get a full enchanted netherite armor set with trims
+    usage: /<command> [player]
+    aliases: [nkit, fullnetherite]
+    permission: netheritekit.use
+permissions:
+  netheritekit.use:
+    description: Allows using the /netheritekit command
+    default: op

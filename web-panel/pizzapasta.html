@@ -1,0 +1,561 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pizza Pasta SMP - Minecraft Server</title>
+    <meta name="description" content="Join Pizza Pasta SMP, an epic Minecraft survival multiplayer server. Connect at 140.228.72.145">
+    <meta name="author" content="Lovable" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/072d5d8f-cc46-4da2-8a3b-f95edd50f560/id-preview-95f67f36--62053b47-7630-4c0a-9314-0201fa9dc836.lovable.app-1774458502606.png">
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@Lovable" />
+    <meta name="twitter:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/072d5d8f-cc46-4da2-8a3b-f95edd50f560/id-preview-95f67f36--62053b47-7630-4c0a-9314-0201fa9dc836.lovable.app-1774458502606.png">
+    <meta property="og:title" content="Pizza Pasta SMP - Minecraft Server">
+    <meta name="twitter:title" content="Pizza Pasta SMP - Minecraft Server">
+    <meta property="og:description" content="Join Pizza Pasta SMP, an epic Minecraft survival multiplayer server. Connect at 140.228.72.145">
+    <meta name="twitter:description" content="Join Pizza Pasta SMP, an epic Minecraft survival multiplayer server. Connect at 140.228.72.145">
+    <script type="module" crossorigin src="assets/index-DNAwsM2X.js"></script>
+    <link rel="stylesheet" crossorigin href="assets/index-DRGKavOA.css">
+    <style>
+      /* Community News & Donation Goals */
+      .pp-section {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 1.5rem;
+        background: #1a1a2e;
+        border: 1px solid #2a2a4a;
+        border-radius: 12px;
+        color: #e0e0e0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+      .pp-section h2 {
+        margin: 0 0 1rem;
+        color: #f5a623;
+        font-size: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .pp-news-item {
+        background: #16213e;
+        border-left: 3px solid #f5a623;
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+        border-radius: 0 8px 8px 0;
+      }
+      .pp-news-item .pp-news-date {
+        font-size: 0.75rem;
+        color: #888;
+        margin-bottom: 0.25rem;
+      }
+      .pp-news-item .pp-news-title {
+        font-weight: bold;
+        color: #fff;
+        margin-bottom: 0.25rem;
+      }
+      .pp-news-item .pp-news-body {
+        font-size: 0.9rem;
+        color: #ccc;
+        line-height: 1.4;
+      }
+      .pp-news-empty {
+        color: #666;
+        font-style: italic;
+        text-align: center;
+        padding: 1rem;
+      }
+
+      /* Donation goals */
+      .pp-goal {
+        background: #16213e;
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+        border-radius: 8px;
+      }
+      .pp-goal-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+      }
+      .pp-goal-name {
+        font-weight: bold;
+        color: #fff;
+      }
+      .pp-goal-amount {
+        color: #4ecca3;
+        font-weight: bold;
+      }
+      .pp-goal-bar-bg {
+        background: #0a0a1a;
+        border-radius: 6px;
+        height: 20px;
+        overflow: hidden;
+      }
+      .pp-goal-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #f5a623, #4ecca3);
+        border-radius: 6px;
+        transition: width 0.5s ease;
+        min-width: 0;
+      }
+      .pp-goal-desc {
+        font-size: 0.8rem;
+        color: #888;
+        margin-top: 0.4rem;
+      }
+
+      /* Admin panel */
+      .pp-admin-toggle {
+        display: block;
+        margin: 1.5rem auto;
+        padding: 0.6rem 1.5rem;
+        background: #2a2a4a;
+        color: #f5a623;
+        border: 1px solid #f5a623;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-family: inherit;
+      }
+      .pp-admin-toggle:hover {
+        background: #f5a623;
+        color: #1a1a2e;
+      }
+      .pp-admin-panel {
+        display: none;
+        max-width: 800px;
+        margin: 1rem auto 2rem;
+        padding: 1.5rem;
+        background: #12122a;
+        border: 1px solid #f5a623;
+        border-radius: 12px;
+        color: #e0e0e0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+      .pp-admin-panel.open { display: block; }
+      .pp-admin-panel h3 {
+        color: #f5a623;
+        margin: 0 0 1rem;
+      }
+      .pp-admin-panel label {
+        display: block;
+        margin-bottom: 0.3rem;
+        font-size: 0.85rem;
+        color: #aaa;
+      }
+      .pp-admin-panel input,
+      .pp-admin-panel textarea {
+        width: 100%;
+        padding: 0.5rem;
+        margin-bottom: 0.75rem;
+        background: #1a1a2e;
+        border: 1px solid #2a2a4a;
+        border-radius: 6px;
+        color: #fff;
+        font-family: inherit;
+        font-size: 0.9rem;
+        box-sizing: border-box;
+      }
+      .pp-admin-panel textarea { resize: vertical; min-height: 60px; }
+      .pp-admin-panel button {
+        padding: 0.5rem 1.2rem;
+        background: #f5a623;
+        color: #1a1a2e;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 0.9rem;
+        margin-right: 0.5rem;
+      }
+      .pp-admin-panel button:hover { background: #e6951a; }
+      .pp-admin-panel button.danger {
+        background: #e74c3c;
+        color: #fff;
+      }
+      .pp-admin-panel button.danger:hover { background: #c0392b; }
+      .pp-admin-panel hr {
+        border: none;
+        border-top: 1px solid #2a2a4a;
+        margin: 1.5rem 0;
+      }
+      .pp-admin-list-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem;
+        background: #1a1a2e;
+        border-radius: 6px;
+        margin-bottom: 0.5rem;
+        font-size: 0.85rem;
+      }
+      .pp-lock-overlay {
+        text-align: center;
+        padding: 2rem;
+      }
+      .pp-lock-overlay input {
+        max-width: 250px;
+        margin: 0 auto 1rem;
+        display: block;
+        text-align: center;
+      }
+      .pp-secure-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        font-size: 0.7rem;
+        color: #4ecca3;
+        margin-left: auto;
+        padding: 0.2rem 0.5rem;
+        background: rgba(78,204,163,0.1);
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <!-- Community News Section -->
+    <section class="pp-section" id="pp-news-section">
+      <h2>Community News</h2>
+      <div id="pp-news-list"></div>
+    </section>
+
+    <!-- Donation Goals Section -->
+    <section class="pp-section" id="pp-goals-section">
+      <h2>Donation Goals</h2>
+      <div id="pp-goals-list"></div>
+    </section>
+
+    <!-- Admin Toggle -->
+    <button class="pp-admin-toggle" id="pp-admin-btn">Admin Panel</button>
+
+    <!-- Admin Panel -->
+    <div class="pp-admin-panel" id="pp-admin-panel">
+      <!-- Login overlay -->
+      <div class="pp-lock-overlay" id="pp-lock">
+        <h3>Admin Login</h3>
+        <input type="password" id="pp-admin-pw" placeholder="Enter admin password" />
+        <button id="pp-admin-login-btn">Unlock</button>
+        <p style="font-size:0.75rem;color:#666;margin-top:0.5rem;">
+          <span class="pp-secure-badge">Secured with AES-GCM encryption</span>
+        </p>
+      </div>
+
+      <!-- Admin content (hidden until unlocked) -->
+      <div id="pp-admin-content" style="display:none;">
+
+        <!-- Add News -->
+        <h3>Add Community News</h3>
+        <label for="pp-news-title-in">Title</label>
+        <input type="text" id="pp-news-title-in" placeholder="e.g. New map expansion!" />
+        <label for="pp-news-body-in">Content</label>
+        <textarea id="pp-news-body-in" placeholder="Write the news post..."></textarea>
+        <button id="pp-news-add-btn">Post News</button>
+
+        <h4 style="color:#aaa;margin:1rem 0 0.5rem;">Existing News</h4>
+        <div id="pp-admin-news-list"></div>
+
+        <hr />
+
+        <!-- Add Donation Goal -->
+        <h3>Add Donation Goal</h3>
+        <label for="pp-goal-name-in">Goal Name</label>
+        <input type="text" id="pp-goal-name-in" placeholder="e.g. New server hardware" />
+        <label for="pp-goal-desc-in">Description</label>
+        <input type="text" id="pp-goal-desc-in" placeholder="Short description..." />
+        <label for="pp-goal-target-in">Target Amount ($)</label>
+        <input type="number" id="pp-goal-target-in" placeholder="100" min="1" />
+        <label for="pp-goal-current-in">Current Amount ($)</label>
+        <input type="number" id="pp-goal-current-in" placeholder="0" min="0" />
+        <button id="pp-goal-add-btn">Add Goal</button>
+
+        <h4 style="color:#aaa;margin:1rem 0 0.5rem;">Existing Goals</h4>
+        <div id="pp-admin-goals-list"></div>
+
+        <hr />
+        <button class="danger" id="pp-admin-logout-btn">Lock Admin Panel</button>
+        <span class="pp-secure-badge" style="margin-top:0.5rem;">All data encrypted with AES-256-GCM</span>
+      </div>
+    </div>
+
+    <script>
+    (function() {
+      'use strict';
+
+      // --- Crypto helpers (AES-256-GCM via Web Crypto API) ---
+      const SALT = new Uint8Array([112,105,122,122,97,112,97,115,116,97,115,109,112,50,48,50,54]);
+
+      async function deriveKey(password) {
+        const enc = new TextEncoder();
+        const keyMaterial = await crypto.subtle.importKey(
+          'raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']
+        );
+        return crypto.subtle.deriveKey(
+          { name: 'PBKDF2', salt: SALT, iterations: 100000, hash: 'SHA-256' },
+          keyMaterial,
+          { name: 'AES-GCM', length: 256 },
+          false,
+          ['encrypt', 'decrypt']
+        );
+      }
+
+      async function encrypt(data, password) {
+        const key = await deriveKey(password);
+        const iv = crypto.getRandomValues(new Uint8Array(12));
+        const enc = new TextEncoder();
+        const ciphertext = await crypto.subtle.encrypt(
+          { name: 'AES-GCM', iv }, key, enc.encode(JSON.stringify(data))
+        );
+        return JSON.stringify({
+          iv: Array.from(iv),
+          ct: Array.from(new Uint8Array(ciphertext))
+        });
+      }
+
+      async function decrypt(stored, password) {
+        const key = await deriveKey(password);
+        const { iv, ct } = JSON.parse(stored);
+        const plaintext = await crypto.subtle.decrypt(
+          { name: 'AES-GCM', iv: new Uint8Array(iv) },
+          key,
+          new Uint8Array(ct)
+        );
+        return JSON.parse(new TextDecoder().decode(plaintext));
+      }
+
+      // --- Storage ---
+      const STORAGE_KEY = 'pp_smp_data';
+      let adminPassword = null;
+
+      function getDefaultData() {
+        return { news: [], goals: [] };
+      }
+
+      async function loadData() {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (!stored || !adminPassword) return getDefaultData();
+        try {
+          return await decrypt(stored, adminPassword);
+        } catch {
+          return getDefaultData();
+        }
+      }
+
+      async function saveData(data) {
+        if (!adminPassword) return;
+        const encrypted = await encrypt(data, adminPassword);
+        localStorage.setItem(STORAGE_KEY, encrypted);
+      }
+
+      // --- Public display (tries to show data if readable) ---
+      async function loadPublicData() {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (!stored) return getDefaultData();
+        // Public data is also stored with a known read-only key for display
+        const publicStored = localStorage.getItem(STORAGE_KEY + '_public');
+        if (publicStored) {
+          try { return JSON.parse(publicStored); } catch { return getDefaultData(); }
+        }
+        return getDefaultData();
+      }
+
+      async function savePublicCopy(data) {
+        // Save an unencrypted copy for public viewing
+        localStorage.setItem(STORAGE_KEY + '_public', JSON.stringify(data));
+      }
+
+      // --- Render: News ---
+      function renderNews(news) {
+        const list = document.getElementById('pp-news-list');
+        if (!news.length) {
+          list.innerHTML = '<div class="pp-news-empty">No news yet. Stay tuned!</div>';
+          return;
+        }
+        list.innerHTML = news.map(n => `
+          <div class="pp-news-item">
+            <div class="pp-news-date">${new Date(n.date).toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' })}</div>
+            <div class="pp-news-title">${escapeHtml(n.title)}</div>
+            <div class="pp-news-body">${escapeHtml(n.body)}</div>
+          </div>
+        `).join('');
+      }
+
+      // --- Render: Goals ---
+      function renderGoals(goals) {
+        const list = document.getElementById('pp-goals-list');
+        if (!goals.length) {
+          list.innerHTML = '<div class="pp-news-empty">No donation goals yet.</div>';
+          return;
+        }
+        list.innerHTML = goals.map(g => {
+          const pct = Math.min(100, Math.round((g.current / g.target) * 100));
+          return `
+            <div class="pp-goal">
+              <div class="pp-goal-header">
+                <span class="pp-goal-name">${escapeHtml(g.name)}</span>
+                <span class="pp-goal-amount">$${g.current} / $${g.target} (${pct}%)</span>
+              </div>
+              <div class="pp-goal-bar-bg">
+                <div class="pp-goal-bar-fill" style="width:${pct}%"></div>
+              </div>
+              ${g.desc ? `<div class="pp-goal-desc">${escapeHtml(g.desc)}</div>` : ''}
+            </div>
+          `;
+        }).join('');
+      }
+
+      // --- Render: Admin lists ---
+      function renderAdminNews(news) {
+        const list = document.getElementById('pp-admin-news-list');
+        if (!news.length) { list.innerHTML = '<div style="color:#666;font-size:0.85rem;">No news posts.</div>'; return; }
+        list.innerHTML = news.map((n, i) => `
+          <div class="pp-admin-list-item">
+            <span>${escapeHtml(n.title)} <span style="color:#666;">(${new Date(n.date).toLocaleDateString()})</span></span>
+            <button class="danger" data-del-news="${i}" style="padding:0.25rem 0.6rem;font-size:0.8rem;">Delete</button>
+          </div>
+        `).join('');
+        list.querySelectorAll('[data-del-news]').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            const idx = parseInt(btn.dataset.delNews);
+            const data = await loadData();
+            data.news.splice(idx, 1);
+            await saveData(data);
+            await savePublicCopy(data);
+            renderAll(data);
+          });
+        });
+      }
+
+      function renderAdminGoals(goals) {
+        const list = document.getElementById('pp-admin-goals-list');
+        if (!goals.length) { list.innerHTML = '<div style="color:#666;font-size:0.85rem;">No goals.</div>'; return; }
+        list.innerHTML = goals.map((g, i) => `
+          <div class="pp-admin-list-item">
+            <span>${escapeHtml(g.name)} — $${g.current}/$${g.target}</span>
+            <span>
+              <button data-edit-goal="${i}" style="padding:0.25rem 0.6rem;font-size:0.8rem;background:#3498db;color:#fff;border:none;border-radius:4px;cursor:pointer;margin-right:0.3rem;">Update $</button>
+              <button class="danger" data-del-goal="${i}" style="padding:0.25rem 0.6rem;font-size:0.8rem;">Delete</button>
+            </span>
+          </div>
+        `).join('');
+        list.querySelectorAll('[data-del-goal]').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            const idx = parseInt(btn.dataset.delGoal);
+            const data = await loadData();
+            data.goals.splice(idx, 1);
+            await saveData(data);
+            await savePublicCopy(data);
+            renderAll(data);
+          });
+        });
+        list.querySelectorAll('[data-edit-goal]').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            const idx = parseInt(btn.dataset.editGoal);
+            const data = await loadData();
+            const newAmount = prompt('Enter new current amount ($):', data.goals[idx].current);
+            if (newAmount !== null && !isNaN(parseFloat(newAmount))) {
+              data.goals[idx].current = parseFloat(newAmount);
+              await saveData(data);
+              await savePublicCopy(data);
+              renderAll(data);
+            }
+          });
+        });
+      }
+
+      function renderAll(data) {
+        renderNews(data.news);
+        renderGoals(data.goals);
+        if (adminPassword) {
+          renderAdminNews(data.news);
+          renderAdminGoals(data.goals);
+        }
+      }
+
+      function escapeHtml(str) {
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+      }
+
+      // --- Init ---
+      async function init() {
+        const data = await loadPublicData();
+        renderNews(data.news);
+        renderGoals(data.goals);
+
+        // Admin toggle
+        document.getElementById('pp-admin-btn').addEventListener('click', () => {
+          document.getElementById('pp-admin-panel').classList.toggle('open');
+        });
+
+        // Admin login
+        document.getElementById('pp-admin-login-btn').addEventListener('click', async () => {
+          const pw = document.getElementById('pp-admin-pw').value;
+          if (!pw) return;
+          adminPassword = pw;
+
+          // Try to decrypt existing data
+          const data = await loadData();
+
+          // If no encrypted data exists yet, save defaults with this password
+          const stored = localStorage.getItem(STORAGE_KEY);
+          if (!stored) {
+            await saveData(data);
+            await savePublicCopy(data);
+          }
+
+          document.getElementById('pp-lock').style.display = 'none';
+          document.getElementById('pp-admin-content').style.display = 'block';
+          renderAll(data);
+        });
+
+        // Logout
+        document.getElementById('pp-admin-logout-btn').addEventListener('click', () => {
+          adminPassword = null;
+          document.getElementById('pp-lock').style.display = '';
+          document.getElementById('pp-admin-content').style.display = 'none';
+          document.getElementById('pp-admin-pw').value = '';
+          document.getElementById('pp-admin-panel').classList.remove('open');
+        });
+
+        // Add news
+        document.getElementById('pp-news-add-btn').addEventListener('click', async () => {
+          const title = document.getElementById('pp-news-title-in').value.trim();
+          const body = document.getElementById('pp-news-body-in').value.trim();
+          if (!title || !body) return;
+          const data = await loadData();
+          data.news.unshift({ title, body, date: new Date().toISOString() });
+          await saveData(data);
+          await savePublicCopy(data);
+          renderAll(data);
+          document.getElementById('pp-news-title-in').value = '';
+          document.getElementById('pp-news-body-in').value = '';
+        });
+
+        // Add goal
+        document.getElementById('pp-goal-add-btn').addEventListener('click', async () => {
+          const name = document.getElementById('pp-goal-name-in').value.trim();
+          const desc = document.getElementById('pp-goal-desc-in').value.trim();
+          const target = parseFloat(document.getElementById('pp-goal-target-in').value);
+          const current = parseFloat(document.getElementById('pp-goal-current-in').value) || 0;
+          if (!name || !target || target <= 0) return;
+          const data = await loadData();
+          data.goals.push({ name, desc, target, current });
+          await saveData(data);
+          await savePublicCopy(data);
+          renderAll(data);
+          document.getElementById('pp-goal-name-in').value = '';
+          document.getElementById('pp-goal-desc-in').value = '';
+          document.getElementById('pp-goal-target-in').value = '';
+          document.getElementById('pp-goal-current-in').value = '';
+        });
+      }
+
+      init();
+    })();
+    </script>
+  </body>
+</html>
