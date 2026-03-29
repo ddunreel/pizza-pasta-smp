@@ -319,7 +319,9 @@
       <div class="pp-admin-panel" id="pp-admin-panel" style="margin-left:1rem;margin-right:1rem;">
         <div class="pp-lock-overlay" id="pp-lock">
           <h3>&#x1F510; Admin Login</h3>
+          <input type="email" id="pp-admin-email" placeholder="Enter admin email" style="margin-bottom:0.5rem;" />
           <input type="password" id="pp-admin-pw" placeholder="Enter admin password" />
+          <div id="pp-admin-error" style="color:hsl(0 84% 60%);font-size:0.8rem;margin-bottom:0.5rem;display:none;">Access denied. Only authorized admins can log in.</div>
           <button class="pp-btn" id="pp-admin-login-btn">Unlock</button>
           <p style="margin-top:1rem;">
             <span class="pp-secure-badge">&#x1F6E1; AES-256-GCM Encrypted</span>
