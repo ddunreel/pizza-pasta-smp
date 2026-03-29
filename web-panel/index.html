@@ -604,8 +604,15 @@
         });
 
         document.getElementById('pp-admin-login-btn').addEventListener('click', async () => {
+          const email = document.getElementById('pp-admin-email').value.trim().toLowerCase();
           const pw = document.getElementById('pp-admin-pw').value;
-          if (!pw) return;
+          if (!pw || !email) return;
+          var errEl = document.getElementById('pp-admin-error');
+          if (email !== 'ddunreel@gmail.com') {
+            errEl.style.display = 'block';
+            return;
+          }
+          errEl.style.display = 'none';
           adminPassword = pw;
           const data = await loadData();
           const stored = localStorage.getItem(STORAGE_KEY);
