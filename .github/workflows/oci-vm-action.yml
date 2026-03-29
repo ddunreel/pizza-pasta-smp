@@ -1,0 +1,93 @@
+name: OCI VM Instance Action
+
+on:
+  workflow_dispatch:
+    inputs:
+      instance_id:
+        description: "OCI Instance OCID"
+        required: true
+        type: string
+      action:
+        description: "Action to perform on the instance"
+        required: true
+        type: choice
+        options:
+          - START
+          - STOP
+          - SOFTRESET
+          - RESET
+          - TERMINATE
+
+jobs:
+  vm-action:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install OCI CLI
+        run: |
+          pip install oci-cli
+
+      - name: Configure OCI credentials
+        run: |
+          mkdir -p ~/.oci
+          cat > ~/.oci/config <<EOF
+          [DEFAULT]
+          tenancy=${{ secrets.OCI_TENANCY_OCID }}
+          user=${{ secrets.OCI_USER_OCID }}
+          fingerprint=${{ secrets.OCI_FINGERPRINT }}
+          key_file=~/.oci/oci_api_key.pem
+          region=${{ secrets.OCI_REGION }}
+          EOF
+          echo "${{ secrets.OCI_PRIVATE_KEY }}" > ~/.oci/oci_api_key.pem
+          chmod 600 ~/.oci/oci_api_key.pem
+
+      - name: Execute VM action
+        id: vm-action
+        run: |
+          INSTANCE_ID="${{ inputs.instance_id }}"
+          ACTION="${{ inputs.action }}"
+
+          if [ "$ACTION" = "TERMINATE" ]; then
+            OUTPUT=$(oci compute instance terminate \
+              --instance-id "$INSTANCE_ID" \
+              --force 2>&1) && STATUS="success" || STATUS="error"
+            LIFECYCLE_STATE="TERMINATING"
+          else
+            OUTPUT=$(oci compute instance action \
+              --instance-id "$INSTANCE_ID" \
+              --action "$ACTION" 2>&1) && STATUS="success" || STATUS="error"
+            if [ "$STATUS" = "success" ]; then
+              LIFECYCLE_STATE=$(echo "$OUTPUT" | jq -r '.data["lifecycle-state"] // empty')
+            else
+              LIFECYCLE_STATE=""
+            fi
+          fi
+
+          if [ "$STATUS" = "error" ]; then
+            ERROR_MESSAGE=$(echo "$OUTPUT" | head -c 500)
+            LIFECYCLE_STATE=""
+          else
+            ERROR_MESSAGE=""
+          fi
+
+          jq -n \
+            --arg status "$STATUS" \
+            --arg action "$ACTION" \
+            --arg instance_id "$INSTANCE_ID" \
+            --arg lifecycle_state "$LIFECYCLE_STATE" \
+            --arg error_message "$ERROR_MESSAGE" \
+            '{
+              status: $status,
+              action: $action,
+              instance_id: $instance_id,
+              lifecycle_state: $lifecycle_state,
+              error_message: $error_message
+            }' > result.json
+
+          echo "Result:"
+          cat result.json
+
+      - name: Upload result artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vm-action-result
+          path: result.json
