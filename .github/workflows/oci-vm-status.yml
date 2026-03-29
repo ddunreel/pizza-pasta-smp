@@ -1,0 +1,140 @@
+name: OCI VM Status
+
+on:
+  workflow_dispatch:
+    inputs:
+      instance_id:
+        description: "Specific instance OCID (leave empty to list all)"
+        required: false
+        default: ""
+
+jobs:
+  get-vm-status:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install OCI CLI
+        run: pip install oci-cli
+
+      - name: Configure OCI credentials
+        run: |
+          mkdir -p ~/.oci
+          echo "${{ secrets.OCI_PRIVATE_KEY }}" > ~/.oci/oci_api_key.pem
+          chmod 600 ~/.oci/oci_api_key.pem
+
+          cat > ~/.oci/config <<EOF
+          [DEFAULT]
+          user=${{ secrets.OCI_USER_OCID }}
+          fingerprint=${{ secrets.OCI_FINGERPRINT }}
+          tenancy=${{ secrets.OCI_TENANCY_OCID }}
+          region=${{ secrets.OCI_REGION }}
+          key_file=~/.oci/oci_api_key.pem
+          EOF
+          chmod 600 ~/.oci/config
+
+      - name: Get VM status
+        env:
+          COMPARTMENT_OCID: ${{ secrets.OCI_COMPARTMENT_OCID }}
+          INSTANCE_ID: ${{ inputs.instance_id }}
+        run: |
+          set -euo pipefail
+
+          get_public_ip() {
+            local instance_id="$1"
+            local compartment_id="$2"
+
+            local vnic_attachment
+            vnic_attachment=$(oci compute vnic-attachment list \
+              --compartment-id "$compartment_id" \
+              --instance-id "$instance_id" \
+              --query 'data[0]."vnic-id"' \
+              --raw-output 2>/dev/null || echo "")
+
+            if [ -n "$vnic_attachment" ] && [ "$vnic_attachment" != "None" ]; then
+              oci network vnic get \
+                --vnic-id "$vnic_attachment" \
+                --query 'data."public-ip"' \
+                --raw-output 2>/dev/null || echo "null"
+            else
+              echo "null"
+            fi
+          }
+
+          build_instance_json() {
+            local instance_json="$1"
+            local compartment_id="$2"
+
+            local id display_name shape ocpus memory_gb lifecycle_state time_created public_ip
+
+            id=$(echo "$instance_json" | jq -r '.id')
+            display_name=$(echo "$instance_json" | jq -r '."display-name"')
+            shape=$(echo "$instance_json" | jq -r '.shape')
+            ocpus=$(echo "$instance_json" | jq -r '."shape-config".ocpus // 1')
+            memory_gb=$(echo "$instance_json" | jq -r '."shape-config"."memory-in-gbs" // 0')
+            lifecycle_state=$(echo "$instance_json" | jq -r '."lifecycle-state"')
+            time_created=$(echo "$instance_json" | jq -r '."time-created"')
+
+            public_ip=$(get_public_ip "$id" "$compartment_id")
+            if [ "$public_ip" = "None" ] || [ -z "$public_ip" ]; then
+              public_ip="null"
+            else
+              public_ip="\"$public_ip\""
+            fi
+
+            cat <<ENTRY
+          {
+            "id": "$id",
+            "display_name": "$display_name",
+            "shape": "$shape",
+            "ocpus": $ocpus,
+            "memory_gb": $memory_gb,
+            "lifecycle_state": "$lifecycle_state",
+            "public_ip": $public_ip,
+            "time_created": "$time_created"
+          }
+          ENTRY
+          }
+
+          instances_array="[]"
+
+          if [ -n "$INSTANCE_ID" ]; then
+            echo "Fetching instance: $INSTANCE_ID"
+            instance_json=$(oci compute instance get --instance-id "$INSTANCE_ID" --query 'data' 2>&1)
+            entry=$(build_instance_json "$instance_json" "$COMPARTMENT_OCID")
+            instances_array=$(echo "$instances_array" | jq --argjson entry "$entry" '. + [$entry]')
+          else
+            echo "Listing all compute instances (excluding TERMINATED)..."
+            all_instances=$(oci compute instance list \
+              --compartment-id "$COMPARTMENT_OCID" \
+              --query 'data' \
+              --all 2>&1)
+
+            instance_count=$(echo "$all_instances" | jq 'length')
+            echo "Found $instance_count total instances"
+
+            for i in $(seq 0 $((instance_count - 1))); do
+              instance_json=$(echo "$all_instances" | jq ".[$i]")
+              state=$(echo "$instance_json" | jq -r '."lifecycle-state"')
+
+              if [ "$state" = "TERMINATED" ]; then
+                continue
+              fi
+
+              display_name=$(echo "$instance_json" | jq -r '."display-name"')
+              echo "Processing instance: $display_name ($state)"
+
+              entry=$(build_instance_json "$instance_json" "$COMPARTMENT_OCID")
+              instances_array=$(echo "$instances_array" | jq --argjson entry "$entry" '. + [$entry]')
+            done
+          fi
+
+          jq -n --argjson instances "$instances_array" '{"instances": $instances}' > result.json
+
+          echo "=== VM Status Result ==="
+          cat result.json | jq .
+
+      - name: Upload result artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vm-status-result
+          path: result.json
