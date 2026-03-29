@@ -1,0 +1,138 @@
+name: Create Oracle Cloud Free Tier VM
+
+on:
+  workflow_dispatch:
+    inputs:
+      display_name:
+        description: "VM display name"
+        required: true
+      shape:
+        description: "Compute shape"
+        required: true
+        default: "VM.Standard.A1.Flex"
+      ocpus:
+        description: "Number of OCPUs (A1.Flex only)"
+        required: true
+        default: "4"
+      memory_gb:
+        description: "Memory in GB (A1.Flex only)"
+        required: true
+        default: "24"
+      ssh_public_key:
+        description: "SSH public key for the instance"
+        required: true
+      image_id:
+        description: "Image OCID"
+        required: true
+      subnet_id:
+        description: "Subnet OCID"
+        required: true
+      availability_domain:
+        description: "Availability domain"
+        required: true
+
+jobs:
+  create-vm:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install OCI CLI
+        run: |
+          pip install oci-cli
+
+      - name: Configure OCI credentials
+        run: |
+          mkdir -p ~/.oci
+          cat > ~/.oci/config <<EOF
+          [DEFAULT]
+          user=${{ secrets.OCI_USER_OCID }}
+          fingerprint=${{ secrets.OCI_FINGERPRINT }}
+          tenancy=${{ secrets.OCI_TENANCY_OCID }}
+          region=${{ secrets.OCI_REGION }}
+          key_file=~/.oci/oci_api_key.pem
+          EOF
+          echo "${{ secrets.OCI_PRIVATE_KEY }}" > ~/.oci/oci_api_key.pem
+          chmod 600 ~/.oci/oci_api_key.pem
+          chmod 600 ~/.oci/config
+
+      - name: Launch instance
+        id: launch
+        run: |
+          SHAPE="${{ inputs.shape }}"
+          DISPLAY_NAME="${{ inputs.display_name }}"
+
+          METADATA="{\"ssh_authorized_keys\": \"${{ inputs.ssh_public_key }}\"}"
+
+          SOURCE_DETAILS="{
+            \"sourceType\": \"image\",
+            \"imageId\": \"${{ inputs.image_id }}\",
+            \"bootVolumeSizeInGBs\": 50
+          }"
+
+          VNIC_DETAILS="{
+            \"subnetId\": \"${{ inputs.subnet_id }}\",
+            \"assignPublicIp\": true
+          }"
+
+          LAUNCH_CMD="oci compute instance launch \
+            --compartment-id ${{ secrets.OCI_COMPARTMENT_OCID }} \
+            --availability-domain ${{ inputs.availability_domain }} \
+            --display-name ${DISPLAY_NAME} \
+            --metadata '${METADATA}' \
+            --source-details '${SOURCE_DETAILS}' \
+            --create-vnic-details '${VNIC_DETAILS}'"
+
+          if [ "$SHAPE" = "VM.Standard.A1.Flex" ]; then
+            SHAPE_CONFIG="{\"ocpus\": ${{ inputs.ocpus }}, \"memoryInGBs\": ${{ inputs.memory_gb }}}"
+            LAUNCH_CMD="${LAUNCH_CMD} --shape ${SHAPE} --shape-config '${SHAPE_CONFIG}'"
+          else
+            LAUNCH_CMD="${LAUNCH_CMD} --shape ${SHAPE}"
+          fi
+
+          echo "Running: ${LAUNCH_CMD}"
+
+          RESULT=$(eval ${LAUNCH_CMD} 2>&1) && EXIT_CODE=0 || EXIT_CODE=$?
+
+          if [ $EXIT_CODE -eq 0 ]; then
+            INSTANCE_ID=$(echo "$RESULT" | jq -r '.data.id')
+            LIFECYCLE_STATE=$(echo "$RESULT" | jq -r '.data["lifecycle-state"]')
+
+            cat > result.json <<REOF
+          {
+            "status": "success",
+            "instance_id": "${INSTANCE_ID}",
+            "display_name": "${DISPLAY_NAME}",
+            "lifecycle_state": "${LIFECYCLE_STATE}",
+            "error_message": ""
+          }
+          REOF
+
+            echo "Instance created successfully: ${INSTANCE_ID}"
+          else
+            ERROR_MSG=$(echo "$RESULT" | tr '\n' ' ' | sed 's/"/\\"/g')
+
+            if echo "$RESULT" | grep -q "Out of host capacity"; then
+              ERROR_MSG="Out of host capacity - no free tier resources available in this availability domain. Try again later or use a different AD."
+            fi
+
+            cat > result.json <<REOF
+          {
+            "status": "error",
+            "instance_id": "",
+            "display_name": "${DISPLAY_NAME}",
+            "lifecycle_state": "",
+            "error_message": "${ERROR_MSG}"
+          }
+          REOF
+
+            echo "::error::Instance creation failed: ${ERROR_MSG}"
+          fi
+
+          echo "Result:"
+          cat result.json
+
+      - name: Upload result artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vm-create-result
+          path: result.json
